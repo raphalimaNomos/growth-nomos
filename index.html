@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Painel Growth — Nomos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap"/>
+<style>
+:root {
+  --lime: #C8E05B;
+  --dark: #021e19;
+  --bg: #010f0d;
+  --surface: #051a16;
+  --surface2: #07221d;
+  --text: #e8f0e9;
+  --grey: #7a8c7e;
+  --border: rgba(255,255,255,0.08);
+  --radius: 10px;
+  --head: 'Syne', sans-serif;
+  --body: 'DM Sans', sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--body); background: var(--bg); color: var(--text); min-height: 100vh; }
+
+/* ── LAYOUT ── */
+.app { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+
+.header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 24px; height: 52px;
+  background: var(--surface); border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.logo { display: flex; align-items: center; gap: 10px; }
+.logo-mark {
+  width: 26px; height: 26px; background: var(--lime); border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+}
+.logo-mark svg { width: 16px; height: 16px; }
+.logo-text { font-family: var(--head); font-weight: 700; font-size: 14px; }
+.logo-text span { color: var(--lime); }
+.badge {
+  font-size: 11px; font-weight: 500; background: var(--lime); color: var(--bg);
+  padding: 3px 10px; border-radius: 20px;
+}
+
+.main { display: grid; grid-template-columns: 320px 1fr; flex: 1; overflow: hidden; }
+
+/* ── LEFT PANEL ── */
+.left {
+  background: var(--surface); border-right: 1px solid var(--border);
+  display: flex; flex-direction: column; overflow-y: auto; overflow-x: hidden;
+  padding: 20px 16px;
+  gap: 14px;
+}
+
+.section-label {
+  font-family: var(--head); font-size: 10px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.08em; color: var(--grey);
+  margin-bottom: 8px;
+}
+
+/* ── CHIPS ── */
+.chips { display: flex; flex-wrap: wrap; gap: 5px; }
+.chip {
+  font-family: var(--body); font-size: 12px; font-weight: 500;
+  padding: 5px 11px; border-radius: 20px;
+  border: 1.5px solid var(--border); background: transparent; color: var(--text);
+  cursor: pointer; transition: all 0.15s; white-space: nowrap;
+}
+.chip:hover { border-color: rgba(255,255,255,0.25); }
+.chip.active { background: var(--lime); color: var(--bg); border-color: var(--lime); }
+
+/* ── FORM FIELDS ── */
+.field { display: flex; flex-direction: column; gap: 5px; }
+
+.field label {
+  font-size: 10px; font-weight: 500; color: var(--grey);
+  text-transform: uppercase; letter-spacing: 0.06em;
+}
+
+select, textarea, input[type="text"] {
+  font-family: var(--body); font-size: 13px; color: var(--text);
+  background: var(--surface2); border: 1.5px solid var(--border);
+  border-radius: var(--radius); padding: 8px 10px;
+  outline: none; transition: border-color 0.15s; width: 100%;
+}
+select option { background: var(--surface2); color: var(--text); }
+select:focus, textarea:focus, input:focus { border-color: var(--lime); }
+textarea { resize: vertical; min-height: 72px; line-height: 1.5; }
+
+/* ── CHECKBOXES PÚBLICO ── */
+.check-list {
+  display: flex; flex-direction: column; gap: 2px;
+  background: var(--surface2); border: 1.5px solid var(--border);
+  border-radius: var(--radius); padding: 6px 4px;
+  max-height: 160px; overflow-y: auto;
+}
+.check-list:focus-within { border-color: var(--lime); }
+
+.check-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 4px 8px; border-radius: 6px; cursor: pointer;
+  transition: background 0.1s; user-select: none;
+}
+.check-item:hover { background: rgba(255,255,255,0.05); }
+
+.check-item input[type="checkbox"] {
+  appearance: none; -webkit-appearance: none;
+  width: 14px; height: 14px; min-width: 14px;
+  border: 1.5px solid var(--border); border-radius: 3px;
+  background: transparent; cursor: pointer;
+  position: relative; transition: all 0.1s;
+  padding: 0; /* reset global padding */
+}
+.check-item input[type="checkbox"]:checked {
+  background: var(--lime); border-color: var(--lime);
+}
+.check-item input[type="checkbox"]:checked::after {
+  content: '';
+  position: absolute; left: 3px; top: 0px;
+  width: 5px; height: 8px;
+  border: 2px solid var(--bg); border-top: none; border-left: none;
+  transform: rotate(45deg);
+}
+.check-item span { font-size: 12px; color: var(--text); }
+
+/* ── INDICATOR TAG ── */
+.tag {
+  display: inline-block; font-size: 10px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.05em;
+  padding: 2px 8px; border-radius: 4px; margin-top: 4px;
+}
+.tag-nomos { background: rgba(200,224,91,0.15); color: var(--lime); }
+.tag-artemis { background: rgba(147,112,219,0.2); color: #c9aff5; }
+
+/* ── DIVIDER ── */
+.divider { height: 1px; background: var(--border); }
+
+/* ── BUTTONS ── */
+.btn {
+  font-family: var(--head); font-size: 13px; font-weight: 600;
+  display: flex; align-items: center; justify-content: space-between;
+  width: 100%; padding: 11px 14px; border-radius: var(--radius);
+  border: none; cursor: pointer; transition: all 0.15s;
+}
+.btn-primary { background: var(--lime); color: var(--bg); }
+.btn-primary:hover { background: #b8d04a; }
+.btn-secondary { background: var(--lime); color: var(--bg); opacity: 0.8; }
+.btn-secondary:hover { opacity: 1; }
+.btn-ghost { background: var(--surface2); color: var(--text); border: 1.5px solid var(--border); }
+.btn-ghost:hover { border-color: rgba(255,255,255,0.25); }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.btn-arrow { font-size: 15px; }
+.hint { font-size: 11px; color: var(--grey); line-height: 1.5; margin-top: 4px; }
+
+/* ── RIGHT PANEL ── */
+.right { display: flex; flex-direction: column; overflow: hidden; }
+
+.output-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 24px; border-bottom: 1px solid var(--border);
+  background: var(--surface); flex-shrink: 0;
+}
+.output-title {
+  font-family: var(--head); font-size: 12px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.04em;
+}
+.output-right { display: flex; align-items: center; gap: 10px; }
+
+.agent-badge {
+  font-size: 11px; font-weight: 600; padding: 3px 10px;
+  border-radius: 20px; background: rgba(200,224,91,0.15); color: var(--lime);
+  letter-spacing: 0.02em;
+}
+
+.status { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--grey); }
+.dot { width: 7px; height: 7px; border-radius: 50%; background: #1e3530; transition: background 0.3s; }
+.dot.loading { background: var(--lime); animation: pulse 1s infinite; }
+.dot.done { background: var(--lime); }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+.output-body { flex: 1; overflow-y: auto; padding: 28px 32px; background: var(--bg); }
+
+.empty {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; height: 100%; gap: 10px;
+  color: var(--grey); text-align: center;
+}
+.empty svg { opacity: 0.25; }
+.empty p { font-size: 13px; max-width: 240px; line-height: 1.6; }
+
+.output-content { font-size: 14px; line-height: 1.75; color: var(--text); white-space: pre-wrap; }
+.output-content h2 { font-family: var(--head); font-size: 15px; font-weight: 700; color: var(--lime); margin: 20px 0 6px; }
+.output-content h3 { font-family: var(--head); font-size: 13px; font-weight: 600; color: var(--lime); margin: 14px 0 5px; }
+.output-content strong { font-weight: 600; color: var(--lime); }
+.output-content p { margin-bottom: 8px; }
+.output-content ul, .output-content ol { padding-left: 18px; margin-bottom: 8px; }
+.output-content li { margin-bottom: 3px; }
+
+.cursor {
+  display: inline-block; width: 2px; height: 14px;
+  background: var(--lime); margin-left: 2px; vertical-align: middle;
+  animation: blink 0.8s infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+/* ── META BAR ── */
+.meta-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 24px; border-top: 1px solid var(--border);
+  background: var(--surface); flex-shrink: 0;
+}
+.meta-info { font-size: 11px; color: var(--grey); }
+.meta-btns { display: flex; gap: 8px; }
+.copy-btn {
+  font-family: var(--body); font-size: 12px; font-weight: 500;
+  padding: 5px 12px; border-radius: 20px;
+  border: 1.5px solid var(--border); background: transparent; color: var(--text);
+  cursor: pointer; transition: all 0.15s;
+}
+.copy-btn:hover { border-color: var(--lime); color: var(--lime); }
+
+/* ── CHAT AREA ── */
+.chat-area {
+  border-top: 1px solid var(--border); background: var(--surface);
+  flex-shrink: 0; display: none; flex-direction: column;
+  max-height: 260px;
+}
+.chat-area.visible { display: flex; }
+
+.chat-history {
+  overflow-y: auto; padding: 10px 24px 6px;
+  display: flex; flex-direction: column; gap: 8px;
+  max-height: 170px;
+}
+.chat-msg {
+  font-size: 13px; line-height: 1.55; max-width: 82%;
+  padding: 7px 12px; border-radius: 8px; white-space: pre-wrap;
+}
+.chat-msg.user { align-self: flex-end; background: var(--lime); color: var(--bg); font-weight: 500; }
+.chat-msg.assistant { align-self: flex-start; background: var(--surface2); color: var(--text); }
+
+.chat-input-row {
+  display: flex; align-items: flex-end; gap: 8px;
+  padding: 6px 24px 10px; border-top: 1px solid var(--border);
+}
+.chat-input {
+  flex: 1; font-family: var(--body); font-size: 13px; color: var(--text);
+  background: var(--surface2); border: 1.5px solid var(--border);
+  border-radius: var(--radius); padding: 7px 10px;
+  outline: none; resize: none; line-height: 1.5;
+  transition: border-color 0.15s; max-height: 80px;
+}
+.chat-input:focus { border-color: var(--lime); }
+.chat-send {
+  width: 34px; height: 34px; border-radius: 8px; border: none;
+  background: var(--lime); color: var(--bg); font-size: 15px;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; transition: background 0.15s;
+}
+.chat-send:hover { background: #b8d04a; }
+.chat-send:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* ── ERROR ── */
+.error {
+  background: rgba(192,57,43,0.12); border: 1.5px solid rgba(192,57,43,0.35);
+  border-radius: var(--radius); padding: 12px 16px;
+  font-size: 13px; color: #e07b6e; line-height: 1.5;
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="logo">
+      <div class="logo-mark">
+        <svg viewBox="0 0 16 16" fill="none">
+          <path d="M2 13L6 6.5L9.5 10.5L12 7.5L14 13H2Z" fill="#010f0d"/>
+          <circle cx="12" cy="4.5" r="1.8" fill="#010f0d"/>
+        </svg>
+      </div>
+      <span class="logo-text">Nomos <span>Growth</span></span>
+    </div>
+    <div class="badge">Painel Growth</div>
+  </header>
+
+  <div class="main">
+
+    <!-- LEFT -->
+    <div class="left">
+
+      <!-- TIPO DE ENTREGA -->
+      <div>
+        <div class="section-label">Tipo de entrega</div>
+        <div class="chips" id="chips">
+          <button class="chip active" data-value="Copy / anúncio">Copy / anúncio</button>
+          <button class="chip" data-value="Roteiro de vídeo">Roteiro de vídeo</button>
+          <button class="chip" data-value="E-mail">E-mail</button>
+          <button class="chip" data-value="WhatsApp">WhatsApp</button>
+          <button class="chip" data-value="Estratégia">Estratégia</button>
+          <button class="chip" data-value="Régua">Régua</button>
+          <button class="chip" data-value="Texto de landing page">Landing page</button>
+          <button class="chip" data-value="Post para feed Instagram">Post feed</button>
+          <button class="chip" data-value="Stories Instagram">Stories</button>
+          <button class="chip" data-value="Texto para imagem">Texto para imagem</button>
+          <button class="chip" data-value="Estratégia de evento">Estratégia evento</button>
+          <button class="chip" data-value="Ativação e marca">Ativação e marca</button>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- PRODUTO -->
+      <div class="field">
+        <label>Produto / Campanha</label>
+        <select id="produto" onchange="onProdutoChange()">
+          <optgroup label="── Nomos Produtos ──">
+            <option value="">— Nenhum / Livre —</option>
+            <option value="TradeNews">TradeNews</option>
+            <option value="Nomos+">Nomos+</option>
+            <option value="Bolsa ao Vivo">Bolsa ao Vivo</option>
+            <option value="Follow Trade">Follow Trade</option>
+            <option value="SOS Trader">SOS Trader</option>
+            <option value="NMS Research">NMS Research</option>
+          </optgroup>
+          <optgroup label="── Campanhas Externas ──">
+            <option value="Projeto Artemis — Bruna Allemann">Projeto Artemis</option>
+          </optgroup>
+        </select>
+        <span class="tag tag-nomos" id="produto-tag">Nomos</span>
+      </div>
+
+      <!-- PÚBLICO-ALVO (checkboxes) -->
+      <div class="field">
+        <label>Público-alvo</label>
+        <div class="check-list" id="publico">
+          <label class="check-item"><input type="checkbox" value="trader iniciante"><span>Trader iniciante</span></label>
+          <label class="check-item"><input type="checkbox" value="trader frustrado"><span>Trader frustrado</span></label>
+          <label class="check-item"><input type="checkbox" value="trader operacional"><span>Trader operacional</span></label>
+          <label class="check-item"><input type="checkbox" value="investidor de alta renda"><span>Alta renda</span></label>
+          <label class="check-item"><input type="checkbox" value="investidor conservador"><span>Conservador</span></label>
+          <label class="check-item"><input type="checkbox" value="lead com interesse em geopolítica e macro"><span>Macro / Geopolítica</span></label>
+          <label class="check-item"><input type="checkbox" value="lead frio"><span>Lead frio</span></label>
+          <label class="check-item"><input type="checkbox" value="base inativa"><span>Base inativa</span></label>
+          <label class="check-item"><input type="checkbox" value="cliente Black Ops (trader 10k+ minicontratos/mês, alto volume, alto patrimônio)"><span>Black Ops</span></label>
+        </div>
+      </div>
+
+      <!-- OBJETIVO -->
+      <div class="field">
+        <label>Objetivo</label>
+        <select id="objetivo" onchange="updateAgentBadge()">
+          <option value="">— Selecione —</option>
+          <option value="Reativação de conta">Reativação de conta</option>
+          <option value="Rentabilização da base">Rentabilização da base</option>
+          <option value="Ativação de conta">Ativação de conta</option>
+          <option value="Abertura de conta">Abertura de conta</option>
+          <option value="Branding">Branding</option>
+        </select>
+      </div>
+
+      <!-- BRIEFING -->
+      <div class="field">
+        <label>Briefing (opcional)</label>
+        <textarea id="briefing" placeholder="Ex: campanha de reativação para traders que pararam de operar..."></textarea>
+      </div>
+
+      <!-- GERAR -->
+      <button class="btn btn-primary" id="btn-gerar">
+        <span>Gerar entrega selecionada</span>
+        <span class="btn-arrow">↗</span>
+      </button>
+
+      <div class="divider"></div>
+
+      <!-- CAMPANHA COMPLETA -->
+      <div>
+        <div class="section-label">Campanha completa</div>
+        <button class="btn btn-secondary" id="btn-campanha">
+          <span>Gerar todos os textos</span>
+          <span class="btn-arrow">↗</span>
+        </button>
+        <p class="hint">Anúncios, roteiro, landing page, e-mails e WhatsApp.</p>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- MIRO -->
+      <div>
+        <div class="section-label">Diagrama no Miro</div>
+        <div class="field" style="margin-bottom:8px">
+          <label>URL do board</label>
+          <input type="text" id="miro-url" placeholder="https://miro.com/app/board/..."/>
+        </div>
+        <button class="btn btn-ghost" id="btn-miro">
+          <span>Criar diagrama no Miro</span>
+          <span class="btn-arrow">↗</span>
+        </button>
+        <p class="hint">Gera o fluxo da campanha no board.</p>
+      </div>
+
+    </div><!-- /left -->
+
+    <!-- RIGHT -->
+    <div class="right">
+
+      <!-- OUTPUT HEADER -->
+      <div class="output-header">
+        <div class="output-title">Output</div>
+        <div class="output-right">
+          <span class="agent-badge" id="agent-badge">✍️ Cyrus — Copy Chief</span>
+          <div class="status">
+            <div class="dot" id="dot"></div>
+            <span id="status-txt">Aguardando</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- OUTPUT BODY -->
+      <div class="output-body" id="output-body">
+        <div class="empty" id="empty">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/>
+          </svg>
+          <p>Configure os campos ao lado e clique em Gerar.</p>
+        </div>
+      </div>
+
+      <!-- META BAR -->
+      <div class="meta-bar" id="meta-bar" style="display:none">
+        <span class="meta-info" id="meta-info"></span>
+        <div class="meta-btns">
+          <button class="copy-btn" id="copy-btn">Copiar output</button>
+        </div>
+      </div>
+
+      <!-- CHAT DE CONTINUAÇÃO -->
+      <div class="chat-area" id="chat-area">
+        <div class="chat-history" id="chat-history"></div>
+        <div class="chat-input-row">
+          <textarea class="chat-input" id="chat-input" rows="1"
+            placeholder="Refine, corrija ou peça uma variação... (Enter para enviar)"></textarea>
+          <button class="chat-send" id="chat-send" title="Enviar (Enter)">↑</button>
+        </div>
+      </div>
+
+    </div><!-- /right -->
+  </div><!-- /main -->
+</div><!-- /app -->
+
+<script>
+'use strict';
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let selectedTipo = 'Copy / anúncio';
+let isLoading = false;
+let lastOutput = '';
+let chatHistory = [];
+let currentSystem = '';
+
+// ── CHIPS ─────────────────────────────────────────────────────────────────────
+document.querySelectorAll('.chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+    selectedTipo = chip.dataset.value;
+    updateAgentBadge();
+  });
+});
+
+// ── PRODUTO ───────────────────────────────────────────────────────────────────
+function onProdutoChange() {
+  const val = document.getElementById('produto').value;
+  const tag = document.getElementById('produto-tag');
+  if (!val) { tag.textContent = ''; tag.className = 'tag'; return; }
+  if (val === 'Projeto Artemis — Bruna Allemann') {
+    tag.textContent = 'Artemis · Externa';
+    tag.className = 'tag tag-artemis';
+  } else {
+    tag.textContent = 'Nomos';
+    tag.className = 'tag tag-nomos';
+  }
+}
+
+// ── AGENT ROUTING ─────────────────────────────────────────────────────────────
+const TIPO_AGENT = {
+  'Copy / anúncio':        'cyrus',
+  'Roteiro de vídeo':      'cyrus',
+  'E-mail':                'cyrus',
+  'WhatsApp':              'cyrus',
+  'Texto de landing page': 'cyrus',
+  'Post para feed Instagram': 'cyrus',
+  'Stories Instagram':     'cyrus',
+  'Texto para imagem':     'cyrus',
+  'Estratégia':            'growth',
+  'Estratégia de evento':  'growth',
+  'Ativação e marca':      'brand',
+  'Régua':                 'crm',
+};
+
+const AGENT_LABELS = {
+  cyrus:  '✍️ Cyrus — Copy Chief',
+  growth: '📈 Growth Strategist',
+  crm:    '⚙️ CRM Agent',
+  brand:  '🎨 Brand Chief',
+};
+
+function getAgent(tipo, objetivo) {
+  if (objetivo === 'Branding') return 'brand';
+  return TIPO_AGENT[tipo] || 'cyrus';
+}
+
+function updateAgentBadge() {
+  const objetivo = document.getElementById('objetivo').value;
+  const agent = getAgent(selectedTipo, objetivo);
+  document.getElementById('agent-badge').textContent = AGENT_LABELS[agent];
+}
+
+// ── SYSTEM PROMPTS ────────────────────────────────────────────────────────────
+const AGENT_CYRUS = `Você é Cyrus, o Copy Chief. Você comanda um squad de 22 dos maiores copywriters que já existiram. Você executa o copy diretamente, incorporando a voz e o método do especialista mais adequado para cada demanda.
+
+Antes de escrever, analise em 3 dimensões:
+1. MÉDIO: email, anúncio, roteiro, landing page, WhatsApp, VSL, régua
+2. NÍVEL DE CONSCIÊNCIA (Schwartz): Mais Consciente → Consciente do Produto → da Solução → do Problema → Inconsciente
+3. OBJETIVO: gerar leads, vender, nutrir, lançar, reter, reativar
+
+Especialistas — selecione o mais adequado:
+- David Ogilvy: pesquisa + autoridade → brand copy, institucionais
+- Eugene Schwartz: consciência de mercado + mecanismo único → cartas de venda, públicos frios
+- Gary Halbert: conexão humana + storytelling → emails, listas quentes
+- Dan Kennedy: direto + oferta irresistível → VSL, B2B
+- Gary Bencivenga: bullets de curiosidade + prova → copy para céticos
+- John Carlton: drama + especificidade + CTA agressivo → anúncios de resposta direta
+- Joe Sugarman: slippery slope + psicologia de leitura → emails digitais
+- Frank Kern: conversacional + autoridade descontraída → VSL moderno
+- Ben Settle: email diário + controvérsia controlada → personal brand
+- Russell Brunson: Hook-Story-Offer → webinars, lançamentos
+- Alex Hormozi: oferta irresistível + value stacking → propostas de valor
+- Stefan Georgi: RMBC method + velocidade → resposta direta moderna
+
+Checklist de qualidade antes de entregar:
+1. Headline fala com o nível de consciência do leitor? (Schwartz)
+2. Lead convence nas primeiras 3 frases? (Halbert)
+3. Há detalhes específicos e concretos? (Ogilvy)
+4. Cada sentença faz querer ler a próxima? (Sugarman)
+5. Há oferta clara e irresistível? (Kennedy)
+6. Bullets carregam curiosidade genuína? (Bencivenga)
+7. Fechamento tem urgência real e CTA inequívoco? (Carlton)
+8. Você compraria isso se fosse o prospecto? (Universal)
+
+Formatos de entrega:
+- Anúncio: ângulo + headline + corpo (150–300 palavras) + CTA + 2–3 variações de headline
+- Email (RD Station): ASSUNTO: / PRÉ-HEADER: / corpo com {{contact.name}}, {{contact.email}}, {{link_cta}} / sem checklist ou comentários de revisão — apenas o email pronto
+- WhatsApp: máximo 3 linhas, sem saudação final, direto ao ponto
+- Roteiro: hook (0–10s) → problema → mecanismo/solução → prova → oferta → CTA
+- Landing page: hero headline + subheadline + dor + solução + bullets + prova + CTA + FAQ
+- Post feed Instagram: hook na primeira linha + desenvolvimento + CTA + 5–8 hashtags
+- Stories Instagram: sequência de 4–6 cards, 1 frase por card + instrução visual
+- Texto para imagem: máximo 8 palavras por linha, 2–3 linhas, impactante, legível em thumbnail. Entregue 3 variações (provocação, curiosidade, urgência). Indique o formato (Stories ou Post)
+
+Regras:
+- Nunca entregue copy genérica
+- Nunca use gatilhos baratos
+- Contexto financeiro BR: use prova, autoridade e especificidade. Evite promessa de retorno garantido.`;
+
+const AGENT_GROWTH = `Você é o Growth Strategist, especialista em estratégia de crescimento, arquitetura de funil e go-to-market.
+
+Framework de Diagnóstico — Os 4 Gargalos:
+1. DEMANDA: volume insuficiente no topo → alavanca: aquisição, awareness
+2. CONVERSÃO: chegam mas não avançam → alavanca: oferta, qualificação, comercial
+3. RETENÇÃO: chegam mas saem → alavanca: onboarding, produto, CS
+4. MONETIZAÇÃO: base existe mas não gera receita → alavanca: pricing, cross-sell, upsell
+
+Validação de oferta em 5 dimensões:
+1. Clareza, 2. Desejabilidade, 3. Credibilidade, 4. Unicidade, 5. Urgência
+
+Formato de entrega para estratégia:
+- Diagnóstico → Objetivo → Top 3 alavancas com ICE score → Arquitetura de funil → Canais → Hipóteses de teste → Riscos e trade-offs
+
+Quando o tipo for "Estratégia de evento": objetivo, público, mecânica de ativação, canais, régua pré/durante/pós, métricas.
+
+Regras:
+- Nunca recomende tático sem diagnóstico estratégico
+- Sempre apresente trade-offs
+- Se a oferta está quebrada, diga antes de falar de canal`;
+
+const AGENT_CRM = `Você é o CRM Agent, especialista em arquitetura de jornadas, réguas de comunicação e lifecycle marketing.
+
+Framework de Lifecycle — Os 6 Estágios:
+1. LEAD FRIO → objetivo: ativar
+2. LEAD ATIVADO → objetivo: qualificar
+3. LEAD QUALIFICADO → objetivo: converter
+4. CLIENTE NOVO (D0–D30) → objetivo: ativar produto
+5. CLIENTE ATIVO → objetivo: aprofundar, cross-sell, LTV
+6. CLIENTE INATIVO → objetivo: reativar
+
+Para cada régua defina: Nome + Estágio + Trigger de entrada + Trigger de saída + Segmento + Objetivo + Canal + Cadência (D0/D1/D3/D7/D14...) + KPI
+
+Padrões de cadência:
+- Onboarding D0–D7: alta frequência
+- Nutrição D7–D30: 2–3x/semana, 70% valor + 30% CTA
+- Reativação: 3 tentativas em 7 dias com ângulos diferentes
+- Pós-conversão: D1 boas-vindas, D3 valor, D7 check-in, D30 NPS + expansão
+
+Regras:
+- Nunca misture cliente novo com lead frio
+- Nunca dispare CTA antes de entregar valor
+- Sempre defina trigger de saída
+- Frequência máxima: email 1/dia, WhatsApp 1 a cada 2 dias`;
+
+const AGENT_BRAND = `Você é o Brand Chief, orquestrador do Brand Squad com 10 pensadores lendários de branding + 4 especialistas funcionais.
+
+Diagnóstico em 4 dimensões antes de entregar:
+1. ESTÁGIO: pré-lançamento / startup / crescimento / enterprise / luxo
+2. DESAFIO: equity, identidade, posicionamento, crescimento, mensagem, visual, cultura, naming, arquitetura, arquétipo
+3. CONTEXTO: B2B ou B2C, setor, momento
+4. OUTPUT: estratégia, execução, diagnóstico ou orquestração
+
+Matriz de roteamento:
+- Brand equity → David Aaker
+- Brand identity → Jean-Noël Kapferer
+- Positioning → Al Ries
+- Evidence-based growth → Byron Sharp
+- Messaging → Donald Miller (StoryBrand)
+- Visual identity → Alina Wheeler
+- Brand culture → Denise Yohn
+- Startup brand → Emily Heyward
+- Naming → Naming Strategist
+- Archetype → Archetype Consultant (12 arquétipos de Jung)
+- Brand architecture → Aaker + Keller
+- Ativação e marca → diagnóstico de percepção atual + posicionamento desejado + ações por canal + mensagem central + indicadores
+
+Regras:
+- Diagnóstico sempre primeiro
+- Nunca um único framework como "a resposta"
+- Especificidade sobre generalidade`;
+
+const CONTEXT_NOMOS = `Contexto — Nomos Investimentos:
+A Nomos é a maior assessoria focada em day trading do Brasil, afiliada XP, São José do Rio Preto (SP).
+
+Produtos:
+- TradeNews: informativo de mercado via WhatsApp, tiers Trial/PRO
+- Nomos+: plataforma premium (relatórios, cursos, Bolsa ao Vivo, e-books, notícias em tempo real)
+- Bolsa ao Vivo: sala ao vivo de pregão com analistas (dentro do Nomos+)
+- Follow Trade: cópia de operações de analistas em tempo real
+- SOS Trader: programa gratuito de recuperação de traders → advisory
+- NMS Research: carteiras Max Ações, Max Dividendos, Max Small Caps, Smart FIIs
+
+Tom: irreverente e inteligente, nunca arrogante, nunca genérico. Nunca prometa rentabilidade garantida.
+
+Objetivos de campanha:
+- Reativação: reativar clientes inativos
+- Rentabilização: fazer clientes operarem mais e em novos produtos
+- Ativação: fazer clientes investirem pela primeira vez na Nomos
+- Branding: exposição de marca, normalmente em eventos
+
+Segmento Black Ops: traders com 10k+ minicontratos/mês, alto volume, alto patrimônio. Comunicação direta, sem didatismo.`;
+
+const CONTEXT_ARTEMIS = `Contexto — Projeto Artemis (Bruna Allemann):
+A Bruna é jornalista posicionada como autoridade em geopolítica, economia global e análise macro. Não é trader.
+
+Audiência: 193k seguidores, engajamento 7,11% (5x acima da média). Tom: humor, sarcasmo e crítica política-econômica.
+
+Modelo: infoproduto gratuito (Resumão da Semana) → comunidade WhatsApp → infoproduto pago (Bruna PRO, Clube do Livro, Workshop ao Vivo, Curso Economia Real).
+
+Objetivo atual: NÃO é abrir conta na Nomos. É construir audiência e monetizar com produtos próprios.
+
+Regras:
+- Nunca CTA direto para abrir conta
+- Nunca prometer rentabilidade
+- Tom: sofisticado, nunca agressivo comercialmente
+- Escreva como se fosse a Bruna falando`;
+
+function buildSystem(tipo, produto, objetivo) {
+  const agent = getAgent(tipo, objetivo);
+  const prompt = agent === 'cyrus' ? AGENT_CYRUS
+               : agent === 'growth' ? AGENT_GROWTH
+               : agent === 'crm' ? AGENT_CRM
+               : AGENT_BRAND;
+  const ctx = produto === 'Projeto Artemis — Bruna Allemann' ? CONTEXT_ARTEMIS : CONTEXT_NOMOS;
+  return prompt + '\n\n---\n\n' + ctx;
+}
+
+// ── PROMPT BUILDERS ───────────────────────────────────────────────────────────
+function getPublicos() {
+  return Array.from(document.querySelectorAll('#publico input[type="checkbox"]:checked'))
+    .map(cb => cb.value);
+}
+
+function buildUserPrompt(tipo, produto, publicos, objetivo, briefing) {
+  const lines = ['Tipo de entrega: ' + tipo];
+  if (produto) lines.push('Produto: ' + produto);
+  if (publicos.length) lines.push('Público-alvo: ' + publicos.join(', '));
+  if (objetivo) lines.push('Objetivo: ' + objetivo);
+  if (briefing) lines.push('\nContexto adicional: ' + briefing);
+  lines.push('\nGere a entrega completa agora.');
+  return lines.join('\n');
+}
+
+function buildCampanhaPrompt(produto, publicos, objetivo, briefing) {
+  const lines = [];
+  if (produto) lines.push('Produto: ' + produto);
+  if (publicos.length) lines.push('Público-alvo: ' + publicos.join(', '));
+  if (objetivo) lines.push('Objetivo: ' + objetivo);
+  if (briefing) lines.push('\nContexto adicional: ' + briefing);
+  lines.push('\nGere a campanha completa: 3 anúncios (ângulos diferentes), roteiro de vídeo curto, copy para landing page, régua de 3 e-mails (D0/D3/D7) e 3 mensagens de WhatsApp.');
+  return lines.join('\n');
+}
+
+function buildMiroPrompt(produto, publicos, objetivo, briefing) {
+  const lines = ['Tipo: diagrama de funil de campanha'];
+  if (produto) lines.push('Produto: ' + produto);
+  if (publicos.length) lines.push('Público-alvo: ' + publicos.join(', '));
+  if (objetivo) lines.push('Objetivo: ' + objetivo);
+  if (briefing) lines.push('\nContexto adicional: ' + briefing);
+  lines.push('\nCrie um diagrama de fluxo com etapas operacionais: aquisição → qualificação → conversão → ativação → retenção. Para cada etapa: canal, mensagem principal, ação esperada e próximo passo.');
+  return lines.join('\n');
+}
+
+// ── API CALL ──────────────────────────────────────────────────────────────────
+async function callAPI(messages, system) {
+  const res = await fetch('https://solitary-cell-8c8a.raphael-fernandes.workers.dev', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 4096,
+      system,
+      stream: true,
+      messages,
+    })
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err?.error?.message || 'HTTP ' + res.status);
+  }
+  return res;
+}
+
+// ── MARKDOWN PARSER ───────────────────────────────────────────────────────────
+function md(text) {
+  return text
+    .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+    .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+    .replace(/^# (.+)$/gm, '<h2>$1</h2>')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    .replace(/^- (.+)$/gm, '<li>$1</li>')
+    .replace(/(<li>.*<\/li>\n?)+/g, s => '<ul>' + s + '</ul>')
+    .replace(/\n\n/g, '<br/><br/>')
+    .replace(/\n(?!<)/g, '<br/>');
+}
+
+// ── STREAM HANDLER ────────────────────────────────────────────────────────────
+async function stream(messages, system, metaLabel) {
+  if (isLoading) return;
+  isLoading = true;
+  lastOutput = '';
+  chatHistory = [];
+  currentSystem = system;
+  setButtons(true);
+  setStatus('loading');
+  document.getElementById('meta-bar').style.display = 'none';
+  document.getElementById('chat-area').classList.remove('visible');
+  document.getElementById('chat-history').innerHTML = '';
+  document.getElementById('output-body').innerHTML = '<div class="output-content"><span class="cursor"></span></div>';
+
+  const t0 = Date.now();
+  try {
+    const res = await callAPI(messages, system);
+    const reader = res.body.getReader();
+    const dec = new TextDecoder();
+    let buf = '';
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buf += dec.decode(value, { stream: true });
+      const lines = buf.split('\n');
+      buf = lines.pop();
+      for (const line of lines) {
+        if (!line.startsWith('data: ')) continue;
+        const d = line.slice(6).trim();
+        if (d === '[DONE]') continue;
+        try {
+          const j = JSON.parse(d);
+          if (j.type === 'content_block_delta' && j.delta?.type === 'text_delta') {
+            lastOutput += j.delta.text;
+            const body = document.getElementById('output-body');
+            body.innerHTML = '<div class="output-content">' + md(lastOutput) + '<span class="cursor"></span></div>';
+            body.scrollTop = body.scrollHeight;
+          }
+        } catch {}
+      }
+    }
+
+    document.getElementById('output-body').innerHTML = '<div class="output-content">' + md(lastOutput) + '</div>';
+    const elapsed = ((Date.now() - t0) / 1000).toFixed(1);
+    document.getElementById('meta-info').textContent = metaLabel + ' · ' + elapsed + 's';
+    document.getElementById('meta-bar').style.display = 'flex';
+    document.getElementById('chat-area').classList.add('visible');
+    setStatus('done');
+
+  } catch (err) {
+    document.getElementById('output-body').innerHTML = '<div class="error">Erro ao chamar a API: ' + err.message + '</div>';
+    setStatus('idle');
+  } finally {
+    isLoading = false;
+    setButtons(false);
+  }
+}
+
+// ── ACTIONS ───────────────────────────────────────────────────────────────────
+document.getElementById('btn-gerar').addEventListener('click', () => {
+  const produto = document.getElementById('produto').value;
+  const publicos = getPublicos();
+  const objetivo = document.getElementById('objetivo').value;
+  const briefing = document.getElementById('briefing').value.trim();
+  const system = buildSystem(selectedTipo, produto, objetivo);
+  const prompt = buildUserPrompt(selectedTipo, produto, publicos, objetivo, briefing);
+  stream([{ role: 'user', content: prompt }], system, selectedTipo + (produto ? ' · ' + produto : ''));
+});
+
+document.getElementById('btn-campanha').addEventListener('click', () => {
+  const produto = document.getElementById('produto').value;
+  const publicos = getPublicos();
+  const objetivo = document.getElementById('objetivo').value;
+  const briefing = document.getElementById('briefing').value.trim();
+  const system = buildSystem(selectedTipo, produto, objetivo);
+  const prompt = buildCampanhaPrompt(produto, publicos, objetivo, briefing);
+  stream([{ role: 'user', content: prompt }], system, 'Campanha completa' + (produto ? ' · ' + produto : ''));
+});
+
+document.getElementById('btn-miro').addEventListener('click', () => {
+  const produto = document.getElementById('produto').value;
+  const publicos = getPublicos();
+  const objetivo = document.getElementById('objetivo').value;
+  const briefing = document.getElementById('briefing').value.trim();
+  const system = buildSystem(selectedTipo, produto, objetivo);
+  const prompt = buildMiroPrompt(produto, publicos, objetivo, briefing);
+  stream([{ role: 'user', content: prompt }], system, 'Diagrama' + (produto ? ' · ' + produto : ''));
+});
+
+// ── COPY ──────────────────────────────────────────────────────────────────────
+document.getElementById('copy-btn').addEventListener('click', () => {
+  navigator.clipboard.writeText(lastOutput).then(() => {
+    const btn = document.getElementById('copy-btn');
+    btn.textContent = 'Copiado ✓';
+    setTimeout(() => btn.textContent = 'Copiar output', 2000);
+  });
+});
+
+// ── CHAT ──────────────────────────────────────────────────────────────────────
+async function sendChat() {
+  const input = document.getElementById('chat-input');
+  const text = input.value.trim();
+  if (!text || !lastOutput || isLoading) return;
+
+  input.value = '';
+  input.style.height = 'auto';
+  document.getElementById('chat-send').disabled = true;
+
+  addChatMsg('user', text);
+  chatHistory.push({ role: 'user', content: text });
+
+  const messages = [
+    { role: 'user', content: 'Gere o output conforme solicitado.' },
+    { role: 'assistant', content: lastOutput },
+    ...chatHistory
+  ];
+
+  const streamMsg = addChatMsg('assistant', '');
+  streamMsg.id = 'chat-streaming';
+
+  try {
+    const res = await callAPI(messages, currentSystem);
+    const reader = res.body.getReader();
+    const dec = new TextDecoder();
+    let buf = '';
+    let full = '';
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buf += dec.decode(value, { stream: true });
+      const lines = buf.split('\n');
+      buf = lines.pop();
+      for (const line of lines) {
+        if (!line.startsWith('data: ')) continue;
+        const d = line.slice(6).trim();
+        if (d === '[DONE]') continue;
+        try {
+          const j = JSON.parse(d);
+          if (j.type === 'content_block_delta' && j.delta?.type === 'text_delta') {
+            full += j.delta.text;
+            streamMsg.textContent = full;
+            const hist = document.getElementById('chat-history');
+            hist.scrollTop = hist.scrollHeight;
+          }
+        } catch {}
+      }
+    }
+
+    streamMsg.removeAttribute('id');
+    chatHistory.push({ role: 'assistant', content: full });
+
+  } catch (err) {
+    streamMsg.textContent = 'Erro: ' + err.message;
+  } finally {
+    document.getElementById('chat-send').disabled = false;
+    input.focus();
+  }
+}
+
+function addChatMsg(role, text) {
+  const hist = document.getElementById('chat-history');
+  const el = document.createElement('div');
+  el.className = 'chat-msg ' + role;
+  el.textContent = text;
+  hist.appendChild(el);
+  hist.scrollTop = hist.scrollHeight;
+  return el;
+}
+
+document.getElementById('chat-send').addEventListener('click', sendChat);
+document.getElementById('chat-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat(); }
+});
+
+// ── HELPERS ───────────────────────────────────────────────────────────────────
+function setStatus(s) {
+  const dot = document.getElementById('dot');
+  const txt = document.getElementById('status-txt');
+  dot.className = 'dot' + (s === 'loading' ? ' loading' : s === 'done' ? ' done' : '');
+  txt.textContent = s === 'loading' ? 'Gerando...' : s === 'done' ? 'Concluído' : 'Aguardando';
+}
+
+function setButtons(dis) {
+  ['btn-gerar', 'btn-campanha', 'btn-miro'].forEach(id => {
+    document.getElementById(id).disabled = dis;
+  });
+}
+</script>
+</body>
+</html>
